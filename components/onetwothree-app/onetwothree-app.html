@@ -1,0 +1,204 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../onetwothree-question/onetwothree-question.html">
+
+<script src="../../resources/players.js"></script>
+
+<dom-module id="onetwothree-app">
+    <template>
+        <header class$="question__header question-[[ question ]]">
+            <h2 class="text-centered flat">Choose your name</h2>
+            <h3>3 points</h3>
+            <h3>2 points</h3>
+            <h3>1 point</h3>
+            <h2 class="text-centered flat">Confirm your selections</h2>
+        </header>
+        <iron-pages attr-for-selected="data-question" selected="[[ question ]]">
+            <div class="list" data-question="1">
+                <template is="dom-repeat" items="[[ players ]]" as="player">
+                    <div class="player" data-id$="[[ player.id ]]" on-click="_handleSelect">
+                        <img class="player__img" src$="https://s3-us-west-2.amazonaws.com/jsncbt-personal/321/images/[[ player.image ]]" alt$="[[ player.alias ]]">
+                        <div class="player__content">
+                            <h3 class="player__alias">[[ player.alias ]]</h3>
+                            <p class="player__name">[[ player.name ]]</p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <onetwothree-question on-selected="_handleVote" players="[[ players ]]" data-question="2"></onetwothree-question>
+            <onetwothree-question on-selected="_handleVote" players="[[ players ]]" data-question="3"></onetwothree-question>
+            <onetwothree-question on-selected="_handleVote" players="[[ players ]]" data-question="4"></onetwothree-question>
+            <div class="exit" data-question="5">
+                <div class="exit__body">
+                    <div class="container">
+                        <form id="gform" method="POST" class="exit__form"
+                        action="https://script.google.com/macros/s/AKfycbx_Vsw3Axzga7cX-vIegnYxxZMFRjFWVyce0NfQ_IdnsL_x6ype/exec" on-submit="_handleSubmit">
+                            <div class="selections">
+                                <template is="dom-repeat" items="[[ selected ]]" as="selection">
+                                    <div class="player">
+                                        <img class="player__img" src$="https://s3-us-west-2.amazonaws.com/jsncbt-personal/321/images/[[ selection.image ]]" alt$="[[ selection.alias ]]">
+                                        <div class="player__content">
+                                            <h3 class="player__alias">[[ selection.alias ]]</h3>
+                                            <p class="player__name">[[ selection.name ]]</p>
+                                        </div>
+                                        <input type="hidden" name$="[[ _getVoteName(index) ]]" value$="[[ selection.id ]]">
+                                    </div>
+                                </template>
+                            </div>
+                            <footer class="exit__footer">
+                                <button class="button" type="submit">Confirm</button>
+                                <div on-click="_reset" class="button no-color">Start again</div>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="finish" data-question="6">
+                <h1>Thanks</h1>
+                <button on-click="_hardReset" class="button no-color">Start again</button>
+            </div>
+        </iron-pages>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'onetwothree-app',
+            properties: {
+                players: Array,
+                playersAll: {
+                    type: Array,
+                    value: []
+                },
+                selected: {
+                    type: Array,
+                    value: []
+                },
+                question: {
+                    type: Number,
+                    value: 1
+                }
+            },
+            _reset: function() {
+                this.set("question", 2);
+                this.set("selected", []);
+                this.set("players", this.playersAll);
+            },
+            _hardReset: function() {
+                this.set("question", 1);
+                this.set("selected", []);
+                this.set("players", this.playersAll);
+                document.querySelectorAll(".selected").forEach(function(el) {
+                    el.classList.remove("selected");
+                });
+                document.querySelectorAll(".user").forEach(function(el) {
+                    el.classList.remove("user");
+                });
+            },
+            _getVoteName: function(index) {
+                if(index == 0) {
+                    return "vote-3";
+                }
+                if(index == 1) {
+                    return "vote-2";
+                }
+                if(index == 2) {
+                    return "vote-1";
+                }
+            },
+            _confirm: function() {
+                // FIRE OFF AND SAVE TO DATABSE 
+                this.question++;
+            },
+            _handleSelect: function(event) {
+                var self = this,
+                    userIndex = event.currentTarget.dataset.id;
+                event.currentTarget.classList.add("selected");
+                document.querySelectorAll("." + userIndex).forEach(function(el) {
+                    el.classList.add("user");
+                });
+                setTimeout(function() {
+                    self.question++;
+                    window.scrollTo(0, 0);
+                }, 250);
+            },
+            _getFormData: function() {
+                var elements = this.$.gform.elements; // all form elements
+                var fields = Object.keys(elements).map(function(k) {
+                    if(elements[k].name !== undefined) {
+                    return elements[k].name;
+                    // special case for Edge's html collection
+                    }else if(elements[k].length > 0){
+                    return elements[k].item(0).name;
+                    }
+                }).filter(function(item, pos, self) {
+                    return self.indexOf(item) == pos && item;
+                });
+                var data = {};
+                fields.forEach(function(k){
+                    data[k] = elements[k].value;
+                    var str = ""; // declare empty string outside of loop to allow
+                                // it to be appended to for each item in the loop
+                    if(elements[k].type === "checkbox"){ // special case for Edge's html collection
+                    str = str + elements[k].checked + ", "; // take the string and append 
+                                                            // the current checked value to 
+                                                            // the end of it, along with 
+                                                            // a comma and a space
+                    data[k] = str.slice(0, -2); // remove the last comma and space 
+                                                // from the  string to make the output 
+                                                // prettier in the spreadsheet
+                    }else if(elements[k].length){
+                    for(var i = 0; i < elements[k].length; i++){
+                        if(elements[k].item(i).checked){
+                        str = str + elements[k].item(i).value + ", "; // same as above
+                        data[k] = str.slice(0, -2);
+                        }
+                    }
+                    }
+                });
+                console.log(data);
+                return data;
+            },
+            _handleSubmit: function(event) {
+                event.preventDefault();           // we are submitting via xhr below
+                var data = getFormData();         // get the values submitted in the form
+                var url = event.target.action;  //
+                var xhr = new XMLHttpRequest();
+                var self = this;
+                xhr.open('POST', url);
+                // xhr.withCredentials = true;
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    console.log(xhr.status, xhr.statusText )
+                    console.log(xhr.responseText);
+                    return;
+                };
+                // url encode form data for sending as post data
+                var encoded = Object.keys(data).map(function(k) {
+                    return encodeURIComponent(k) + '=' + encodeURIComponent(data[k])
+                }).join('&')
+                xhr.send(encoded);
+                self.question ++;
+            },
+            _handleVote: function(event) {
+                var self = this,
+                    player = event.detail.player,
+                    playerIndex = event.detail.index;
+                this.push("selected", player);
+                setTimeout(function() {
+                    self.question++;
+                    self.splice("players", playerIndex , 1);
+                    window.scrollTo(0, 0);
+                }, 250);
+            },
+            ready: function() {
+                this.set("players", players);
+                // Clone players into a list of original players
+                this.playersAll = this.players.slice(0);
+            }
+        });
+
+    </script>
+    <script src="../../scripts/form-submission-handler.js"></script>
+
+</dom-module>

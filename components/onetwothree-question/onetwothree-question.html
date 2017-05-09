@@ -1,0 +1,37 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<script src="../../resources/players.js"></script>
+
+<dom-module id="onetwothree-question">
+    <template>
+        <div class="question">
+            <ol>
+                <template is="dom-repeat" items="[[ players ]]" as="player" as="player-index">
+                    <li class$="player [[ player.id ]]" on-click="_handleSelection" data-index="[[ player-index ]]">
+                        <img class="player__img" src$="https://s3-us-west-2.amazonaws.com/jsncbt-personal/321/images/[[ player.image ]]" alt="[[ player.alias ]]">
+                        <div class="player__content">
+                            <h3 class="player__alias">[[ player.alias ]]</h3>
+                            <p class="player__name">[[ player.name ]]</p>
+                        </div>
+                    </li>
+                </template>
+            </ol>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'onetwothree-question',
+            properties: {
+                players: Array
+            },
+            _handleSelection: function(event) {
+                var self = this;
+                this.fire("selected", event.model);
+                event.currentTarget.classList.add("selected");
+            }
+        });
+
+    </script>
+
+</dom-module>
