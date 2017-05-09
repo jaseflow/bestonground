@@ -7,22 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="import" href="components/onetwothree-app/onetwothree-app.html">
     <link rel="stylesheet" href="styles.css">
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
 </head>
 <body>
     <onetwothree-app id="app"></onetwothree-app>
-    <script>
-        (function() {
-        if ('registerElement' in document
-            && 'import' in document.createElement('link')
-            && 'content' in document.createElement('template')) {
-            // platform is good!
-        } else {
-            // polyfill the platform!
-            var e = document.createElement('script');
-            e.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
-            document.body.appendChild(e);
-        }
-        })();
-    </script>
 </body>
 </html>
