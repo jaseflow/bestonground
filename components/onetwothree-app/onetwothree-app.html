@@ -45,6 +45,7 @@
                                         <input type="hidden" name$="[[ _getVoteName(index) ]]" value$="[[ selection.id ]]">
                                     </div>
                                 </template>
+                                <input type="hidden" name="user" value$="[[ user ]]">
                             </div>
                             <footer class="exit__footer">
                                 <button class="button" type="submit">Confirm</button>
@@ -77,6 +78,9 @@
                 question: {
                     type: Number,
                     value: 1
+                },
+                user: {
+                    type: String
                 }
             },
             _reset: function() {
@@ -112,9 +116,10 @@
             },
             _handleSelect: function(event) {
                 var self = this,
-                    userIndex = event.currentTarget.dataset.id;
+                    user = event.currentTarget.dataset.id;
                 event.currentTarget.classList.add("selected");
-                document.querySelectorAll("." + userIndex).forEach(function(el) {
+                this.set("user", user);
+                document.querySelectorAll("." + user).forEach(function(el) {
                     el.classList.add("user");
                 });
                 setTimeout(function() {
