@@ -10,7 +10,7 @@ img {
 
 body {
     font-family: sans-serif;
-    padding-top: 92px;
+    padding-top: 79px;
 }
 
 .container {
@@ -40,13 +40,11 @@ body {
 	background: rgba(0,128,0,0.1);
 }
 
-.player:first-child {
-	border-top: 0;
-}
-
 .player__img {
+    background: #ddd;
 	margin-right: 12px;
     width: 32px;
+    height: 32px;
     border-radius: 50%;
     overflow: hidden;
 }
@@ -276,7 +274,7 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin-top: -92px;
+    margin-top: -79px;
     background: green;
     color: #fff;
     opacity: 0;

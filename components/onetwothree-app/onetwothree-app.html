@@ -3,8 +3,6 @@
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../onetwothree-question/onetwothree-question.html">
 
-<script src="../../resources/players.js"></script>
-
 <dom-module id="onetwothree-app">
     <template>
         <header class$="question__header question-[[ question ]]">
@@ -18,7 +16,8 @@
             <div class="list" data-question="1">
                 <template is="dom-repeat" items="[[ players ]]" as="player">
                     <div class="player" data-id$="[[ player.id ]]" on-click="_handleSelect">
-                        <img class="player__img" src$="https://s3-us-west-2.amazonaws.com/jsncbt-personal/321/images/[[ player.image ]]" alt$="[[ player.alias ]]">
+                        <div class="player__img" hidden$="[[ player.image ]]"></div>
+                        <img class="player__img" hidden$="[[ !player.image ]]" src$="/images/[[ player.image ]]" alt$="[[ player.alias ]]">
                         <div class="player__content">
                             <h3 class="player__alias">[[ player.alias ]]</h3>
                             <p class="player__name">[[ player.name ]]</p>
@@ -33,11 +32,11 @@
                 <div class="exit__body">
                     <div class="container">
                         <form id="gform" method="POST" class="exit__form"
-                        action="https://script.google.com/macros/s/AKfycbx_Vsw3Axzga7cX-vIegnYxxZMFRjFWVyce0NfQ_IdnsL_x6ype/exec" on-submit="_handleSubmit">
+                        action$="https://script.google.com/macros/s/[[ sheetId ]]/exec" on-submit="_handleSubmit">
                             <div class="selections">
                                 <template is="dom-repeat" items="[[ selected ]]" as="selection">
                                     <div class="player">
-                                        <img class="player__img" src$="https://s3-us-west-2.amazonaws.com/jsncbt-personal/321/images/[[ selection.image ]]" alt$="[[ selection.alias ]]">
+                                        <img class="player__img" src$="/images/[[ selection.image ]]" alt$="[[ selection.alias ]]">
                                         <div class="player__content">
                                             <h3 class="player__alias">[[ selection.alias ]]</h3>
                                             <p class="player__name">[[ selection.name ]]</p>
@@ -66,7 +65,10 @@
         Polymer({
             is: 'onetwothree-app',
             properties: {
-                players: Array,
+                players: {
+                    type: Array,
+                    observer: "_handlePlayersChanged"
+                },
                 playersAll: {
                     type: Array,
                     value: []
@@ -80,6 +82,9 @@
                     value: 1
                 },
                 user: {
+                    type: String
+                },
+                sheetId: {
                     type: String
                 }
             },
@@ -165,7 +170,7 @@
             },
             _handleSubmit: function(event) {
                 event.preventDefault();           // we are submitting via xhr below
-                var data = getFormData();         // get the values submitted in the form
+                var data = this._getFormData();         // get the values submitted in the form
                 var url = event.target.action;  //
                 var xhr = new XMLHttpRequest();
                 var self = this;
@@ -195,14 +200,14 @@
                     window.scrollTo(0, 0);
                 }, 250);
             },
-            ready: function() {
-                this.set("players", players);
+            _handlePlayersChanged: function(players) {
                 // Clone players into a list of original players
-                this.playersAll = this.players.slice(0);
+                if(players) {
+                    this.playersAll = players.slice(0);
+                }
             }
         });
 
     </script>
-    <script src="../../scripts/form-submission-handler.js"></script>
 
 </dom-module>
