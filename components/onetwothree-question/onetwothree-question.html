@@ -29,6 +29,9 @@
                     value: 0
                 }
             },
+            reset: function() {
+                this.set("clickCount", 0);
+            },
             _sort: function(a, b) {
                 if(a.alias < b.alias) return -1;
                 if(a.alias > b.alias) return 1;

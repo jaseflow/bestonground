@@ -66,8 +66,11 @@
             is: 'onetwothree-app',
             properties: {
                 players: {
-                    type: Array,
-                    observer: "_handlePlayersChanged"
+                    type: Array
+                },
+                clickCount: {
+                    type: Number,
+                    value: 0
                 },
                 selected: {
                     type: Array,
@@ -98,10 +101,14 @@
                 document.querySelectorAll(".vote").forEach(function(el) {
                     el.classList.remove("vote");
                 });
+                document.querySelectorAll("onetwothree-question").forEach(function(el) {
+                    el.reset();
+                });
             },
             _hardReset: function() {
                 this.set("question", 1);
                 this.set("selected", []);
+                this.set("clickCount", 0);
                 document.querySelectorAll(".selected").forEach(function(el) {
                     el.classList.remove("selected");
                 });
@@ -110,6 +117,9 @@
                 });
                 document.querySelectorAll(".vote").forEach(function(el) {
                     el.classList.remove("vote");
+                });
+                document.querySelectorAll("onetwothree-question").forEach(function(el) {
+                    el.reset();
                 });
             },
             _getVoteName: function(index) {
@@ -126,15 +136,18 @@
             _handleSelect: function(event) {
                 var self = this,
                     user = event.currentTarget.dataset.id;
-                event.currentTarget.classList.add("selected");
-                this.set("user", user);
-                document.querySelectorAll("." + user).forEach(function(el) {
-                    el.classList.add("user");
-                });
-                setTimeout(function() {
-                    self.question++;
-                    window.scrollTo(0, 0);
-                }, 250);
+                this.clickCount++;
+                if(this.clickCount == 1){
+                    event.currentTarget.classList.add("selected");
+                    this.set("user", user);
+                    document.querySelectorAll("." + user).forEach(function(el) {
+                        el.classList.add("user");
+                    });
+                    setTimeout(function() {
+                        self.question++;
+                        window.scrollTo(0, 0);
+                    }, 250);
+                }
             },
             _getFormData: function() {
                 var elements = this.$.gform.elements; // all form elements
@@ -202,9 +215,7 @@
                 setTimeout(function() {
                     self.question++;
                     // self.splice("players", playerIndex , 1);
-                    console.log(vote);
                     document.querySelectorAll("." + vote).forEach(function(el) {
-                        console.log("happening ?");
                         el.classList.add("vote");
                     });
                     window.scrollTo(0, 0);
