@@ -69,10 +69,6 @@
                     type: Array,
                     observer: "_handlePlayersChanged"
                 },
-                playersAll: {
-                    type: Array,
-                    value: []
-                },
                 selected: {
                     type: Array,
                     value: []
@@ -88,25 +84,32 @@
                     type: String
                 }
             },
-            _reset: function() {
-                this.set("question", 2);
-                this.set("selected", []);
-                this.set("players", this.playersAll);
-            },
             _sort: function(a, b) {
                 if(a.alias < b.alias) return -1;
                 if(a.alias > b.alias) return 1;
                 return 0;
             },
+            _reset: function() {
+                this.set("question", 2);
+                this.set("selected", []);
+                document.querySelectorAll(".selected").forEach(function(el) {
+                    el.classList.remove("selected");
+                });
+                document.querySelectorAll(".vote").forEach(function(el) {
+                    el.classList.remove("vote");
+                });
+            },
             _hardReset: function() {
                 this.set("question", 1);
                 this.set("selected", []);
-                this.set("players", this.playersAll);
                 document.querySelectorAll(".selected").forEach(function(el) {
                     el.classList.remove("selected");
                 });
                 document.querySelectorAll(".user").forEach(function(el) {
                     el.classList.remove("user");
+                });
+                document.querySelectorAll(".vote").forEach(function(el) {
+                    el.classList.remove("vote");
                 });
             },
             _getVoteName: function(index) {
@@ -193,19 +196,19 @@
             _handleVote: function(event) {
                 var self = this,
                     player = event.detail.player,
+                    vote = event.detail.player.id;
                     playerIndex = event.detail.index;
                 this.push("selected", player);
                 setTimeout(function() {
                     self.question++;
-                    self.splice("players", playerIndex , 1);
+                    // self.splice("players", playerIndex , 1);
+                    console.log(vote);
+                    document.querySelectorAll("." + vote).forEach(function(el) {
+                        console.log("happening ?");
+                        el.classList.add("vote");
+                    });
                     window.scrollTo(0, 0);
                 }, 250);
-            },
-            _handlePlayersChanged: function(players) {
-                // Clone players into a list of original players
-                if(players) {
-                    this.playersAll = players.slice(0);
-                }
             }
         });
 

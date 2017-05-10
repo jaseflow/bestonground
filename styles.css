@@ -32,7 +32,8 @@ body {
     border-top: 1px solid #ddd;
 }
 
-.player.user {
+.player.user,
+.player.vote {
 	display: none;
 }
 
@@ -76,9 +77,8 @@ body {
     display: flex;
     background: #fff;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     text-align: center;
-    padding: 0 48px;
     z-index: 10;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     overflow: hidden;
