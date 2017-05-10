@@ -23,7 +23,11 @@
         Polymer({
             is: 'onetwothree-question',
             properties: {
-                players: Array
+                players: Array,
+                clickCount: {
+                    type: Number,
+                    value: 0
+                }
             },
             _sort: function(a, b) {
                 if(a.alias < b.alias) return -1;
@@ -32,8 +36,11 @@
             },
             _handleSelection: function(event) {
                 var self = this;
-                this.fire("selected", event.model);
-                event.currentTarget.classList.add("selected");
+                this.clickCount++;
+                if(this.clickCount == 1) {
+                    this.fire("selected", event.model);
+                    event.currentTarget.classList.add("selected");
+                } else return;
             }
         });
 
