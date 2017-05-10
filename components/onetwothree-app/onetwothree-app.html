@@ -14,7 +14,7 @@
         </header>
         <iron-pages attr-for-selected="data-question" selected="[[ question ]]">
             <div class="list" data-question="1">
-                <template is="dom-repeat" items="[[ players ]]" as="player">
+                <template is="dom-repeat" items="[[ players ]]" as="player" sort="_sort">
                     <div class="player" data-id$="[[ player.id ]]" on-click="_handleSelect">
                         <div class="player__img" hidden$="[[ player.image ]]"></div>
                         <img class="player__img" hidden$="[[ !player.image ]]" src$="/images/[[ player.image ]]" alt$="[[ player.alias ]]">
@@ -93,6 +93,11 @@
                 this.set("selected", []);
                 this.set("players", this.playersAll);
             },
+            _sort: function(a, b) {
+                if(a.alias < b.alias) return -1;
+                if(a.alias > b.alias) return 1;
+                return 0;
+            },
             _hardReset: function() {
                 this.set("question", 1);
                 this.set("selected", []);
@@ -114,10 +119,6 @@
                 if(index == 2) {
                     return "vote-1";
                 }
-            },
-            _confirm: function() {
-                // FIRE OFF AND SAVE TO DATABSE 
-                this.question++;
             },
             _handleSelect: function(event) {
                 var self = this,
